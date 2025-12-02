@@ -23,6 +23,7 @@ Public Class Form1
             Using conn As New MySqlConnection("server=localhost; userid=root; password=root; database=canayanfinalprojectdb")
                 conn.Open()
                 Using cmd As New MySqlCommand(query, conn)
+                    cmd.Parameters.AddWithValue("@id", TextBoxId.Text)
                     cmd.Parameters.AddWithValue("@name", TextBoxName.Text)
                     cmd.Parameters.AddWithValue("@age", TextBoxAge.Text)
                     cmd.Parameters.AddWithValue("@diagnosis", TextBoxDiagnosis.Text)
@@ -34,6 +35,7 @@ Public Class Form1
         Catch ex As Exception
             MsgBox(ex.Message)
         End Try
+        TextBoxId.Clear()
         TextBoxAge.Clear()
         TextBoxName.Clear()
         TextBoxDiagnosis.Clear()
@@ -52,8 +54,7 @@ Public Class Form1
                 Dim table As New DataTable()
                 adapter.Fill(table)
                 DataGridView1.DataSource = table
-                DataGridView1.Columns("id").Visible = False
-                DataGridView1.Columns("is_deleted").Visible = False
+                TextBoxId.Clear()
                 TextBoxAge.Clear()
                 TextBoxName.Clear()
                 TextBoxDiagnosis.Clear()
@@ -68,15 +69,94 @@ Public Class Form1
         Try
             If e.RowIndex >= 0 Then
                 Dim row As DataGridViewRow = DataGridView1.Rows(e.RowIndex)
-
+                TextBoxId.Text = row.Cells("id").Value.ToString()
                 TextBoxName.Text = row.Cells("name").Value.ToString()
                 TextBoxAge.Text = row.Cells("age").Value.ToString()
                 TextBoxDiagnosis.Text = row.Cells("diagnosis").Value.ToString()
-                TextBoxRoomNumber.Text = row.Cells("roomnumber").Value.ToString()
+                TextBoxRoomNumber.Text = row.Cells("room_number").Value.ToString()
             End If
         Catch ex As Exception
             MsgBox(ex.Message)
         End Try
 
+    End Sub
+
+    Private Sub ButtonUpdate_Click(sender As Object, e As EventArgs) Handles ButtonUpdate.Click
+        If DataGridView1.CurrentRow Is Nothing Then
+            MsgBox("Please select a row first.")
+            Exit Sub
+        End If
+
+        Dim selectedID As Integer = DataGridView1.CurrentRow.Cells("id").Value
+
+        Dim query As String = "UPDATE hospital_records SET name=@name, age=@age, diagnosis=@diagnosis, room_number=@room_number WHERE id=@id"
+
+        Try
+            Using conn As New MySqlConnection("server=localhost; userid=root; password=root; database=canayanfinalprojectdb")
+                conn.Open()
+                Using cmd As New MySqlCommand(query, conn)
+
+                    cmd.Parameters.AddWithValue("@id", selectedID)
+                    cmd.Parameters.AddWithValue("@name", TextBoxName.Text)
+                    cmd.Parameters.AddWithValue("@age", TextBoxAge.Text)
+                    cmd.Parameters.AddWithValue("@diagnosis", TextBoxDiagnosis.Text)
+                    cmd.Parameters.AddWithValue("@room_number", TextBoxRoomNumber.Text)
+
+                    cmd.ExecuteNonQuery()
+                    MessageBox.Show("Record Updated Successfully")
+                    TextBoxId.Clear()
+                    TextBoxAge.Clear()
+                    TextBoxName.Clear()
+                    TextBoxDiagnosis.Clear()
+                    TextBoxRoomNumber.Clear()
+                End Using
+            End Using
+        Catch ex As Exception
+            MsgBox(ex.Message)
+        End Try
+
+        LoadData()
+    End Sub
+
+    Private Sub ButtonDelete_Click(sender As Object, e As EventArgs) Handles ButtonDelete.Click
+        If DataGridView1.CurrentRow Is Nothing Then
+            MsgBox("there is no item left")
+            Exit Sub
+        End If
+
+        Dim selectedID As Integer = DataGridView1.CurrentRow.Cells("id").Value
+
+        Dim query As String = "DELETE FROM hospital_records WHERE id=@id"
+
+        Try
+            Using conn As New MySqlConnection("server=localhost; userid=root; password=root; database=canayanfinalprojectdb")
+                conn.Open()
+                Using cmd As New MySqlCommand(query, conn)
+
+                    cmd.Parameters.AddWithValue("@id", selectedID)
+                    cmd.ExecuteNonQuery()
+
+                    MessageBox.Show("Record Deleted Successfully")
+                    TextBoxId.Clear()
+                    TextBoxAge.Clear()
+                    TextBoxName.Clear()
+                    TextBoxDiagnosis.Clear()
+                    TextBoxRoomNumber.Clear()
+                End Using
+            End Using
+        Catch ex As Exception
+            MsgBox(ex.Message)
+        End Try
+        LoadData()
+    End Sub
+    Private Sub DataGridView1_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellContentClick
+        If e.RowIndex >= 0 Then
+            Dim selectedRow As DataGridViewRow = DataGridView1.Rows(e.RowIndex)
+            TextBoxName.Text = selectedRow.Cells("name").Value.ToString()
+            TextBoxAge.Text = selectedRow.Cells("age").Value.ToString()
+            TextBoxDiagnosis.Text = selectedRow.Cells("diagnosis").Value.ToString()
+            TextBoxRoomNumber.Text = selectedRow.Cells("room_number").Value.ToString()
+            TextBoxId.Text = selectedRow.Cells("id").Value.ToString()
+        End If
     End Sub
 End Class
