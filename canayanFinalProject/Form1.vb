@@ -23,7 +23,7 @@ Public Class Form1
             Using conn As New MySqlConnection("server=localhost; userid=root; password=root; database=canayanfinalprojectdb")
                 conn.Open()
                 Using cmd As New MySqlCommand(query, conn)
-                    cmd.Parameters.AddWithValue("@id", TextBoxId.Text)
+
                     cmd.Parameters.AddWithValue("@name", TextBoxName.Text)
                     cmd.Parameters.AddWithValue("@age", TextBoxAge.Text)
                     cmd.Parameters.AddWithValue("@diagnosis", TextBoxDiagnosis.Text)
@@ -35,7 +35,7 @@ Public Class Form1
         Catch ex As Exception
             MsgBox(ex.Message)
         End Try
-        TextBoxId.Clear()
+
         TextBoxAge.Clear()
         TextBoxName.Clear()
         TextBoxDiagnosis.Clear()
@@ -54,7 +54,8 @@ Public Class Form1
                 Dim table As New DataTable()
                 adapter.Fill(table)
                 DataGridView1.DataSource = table
-                TextBoxId.Clear()
+                DataGridView1.Columns("id").Visible = False
+
                 TextBoxAge.Clear()
                 TextBoxName.Clear()
                 TextBoxDiagnosis.Clear()
@@ -69,7 +70,7 @@ Public Class Form1
         Try
             If e.RowIndex >= 0 Then
                 Dim row As DataGridViewRow = DataGridView1.Rows(e.RowIndex)
-                TextBoxId.Text = row.Cells("id").Value.ToString()
+
                 TextBoxName.Text = row.Cells("name").Value.ToString()
                 TextBoxAge.Text = row.Cells("age").Value.ToString()
                 TextBoxDiagnosis.Text = row.Cells("diagnosis").Value.ToString()
@@ -104,7 +105,7 @@ Public Class Form1
 
                     cmd.ExecuteNonQuery()
                     MessageBox.Show("Record Updated Successfully")
-                    TextBoxId.Clear()
+
                     TextBoxAge.Clear()
                     TextBoxName.Clear()
                     TextBoxDiagnosis.Clear()
@@ -137,7 +138,7 @@ Public Class Form1
                     cmd.ExecuteNonQuery()
 
                     MessageBox.Show("Record Deleted Successfully")
-                    TextBoxId.Clear()
+
                     TextBoxAge.Clear()
                     TextBoxName.Clear()
                     TextBoxDiagnosis.Clear()
@@ -156,7 +157,7 @@ Public Class Form1
             TextBoxAge.Text = selectedRow.Cells("age").Value.ToString()
             TextBoxDiagnosis.Text = selectedRow.Cells("diagnosis").Value.ToString()
             TextBoxRoomNumber.Text = selectedRow.Cells("room_number").Value.ToString()
-            TextBoxId.Text = selectedRow.Cells("id").Value.ToString()
+
         End If
     End Sub
 End Class
